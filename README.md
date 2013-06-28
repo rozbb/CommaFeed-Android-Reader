@@ -8,7 +8,7 @@ The official unofficial Android CommaFeed reader is here! It is currently in sup
 Screenshots
 -----------
 
-![Login Screen](http://i.imgur.com/IGjNa2a.png) ![Main View](http://i.imgur.com/OEI1OGh.png) ![Entries View](http://i.imgur.com/Hg8AlHb.png) ![Entry View](http://i.imgur.com/oobTlKX.png)
+![Login Screen](http://i.imgur.com/IGjNa2al.png) ![Main View](http://i.imgur.com/OEI1OGhl.png) ![Entries View](http://i.imgur.com/Hg8AlHbl.png) ![Entry View](http://i.imgur.com/oobTlKXl.png)
 
 Current Features
 ----------------
@@ -46,20 +46,23 @@ Dependencies
 ## JAR names
 
 Libraries:
-	android-support-v4.jar
-	androidannotations-api-2.7.1.jar
-	jackson-all-1.9.11.jar
-	jackson-annotations-2.2.0.jar
-	spring-android-auth-1.0.1.RELEASE.jar
-	spring-android-core-1.0.1.RELEASE.jar
-	spring-android-rest-template-1.0.1.RELEASE.jar
+
+* android-support-v4.jar
+* androidannotations-api-2.7.1.jar
+* jackson-all-1.9.11.jar
+* jackson-annotations-2.2.0.jar
+* spring-android-auth-1.0.1.RELEASE.jar
+* spring-android-core-1.0.1.RELEASE.jar
+* spring-android-rest-template-1.0.1.RELEASE.jar
 
 Annotation Processing:
-	androidannotations-2.7.1.jar
-	
+
+* androidannotations-2.7.1.jar
+
 ## Installation Help
 
 [Android Annotations](https://github.com/excilys/androidannotations/wiki/Eclipse-Project-Configuration)
+
 [Actionbar Sherlock](http://actionbarsherlock.com/usage.html)
 
 License
