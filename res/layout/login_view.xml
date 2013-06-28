@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="24"
+    android:orientation="vertical"
+    android:background="#FFFFFF" >
+    
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="5" />
+
+    <ImageView
+        android:id="@+id/logoImage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:scaleType="centerInside"
+        android:src="@drawable/logo" />
+    
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="5" />
+
+    <EditText
+        android:id="@+id/usernameField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:hint="Username"
+        android:inputType="text|textNoSuggestions" >
+
+        <requestFocus />
+    </EditText>
+    
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <EditText
+        android:id="@+id/passwordField"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="30dp"
+        android:layout_marginLeft="40dp"
+        android:layout_marginRight="40dp"
+        android:hint="Password"
+        android:inputType="textPassword" />
+    
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/loginButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:background="#615749"
+        android:text="Login"
+        android:textColor="#FFFFFF"
+        android:typeface="sans" />
+
+</LinearLayout>
