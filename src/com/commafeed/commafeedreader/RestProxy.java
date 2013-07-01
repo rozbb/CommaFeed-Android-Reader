@@ -25,14 +25,19 @@ public class RestProxy implements InvocationHandler {
 	
 	// Create a new proxy class wrapping the CommaFeedClient_ class
 	// (the underscore is the suffix added to the name of the interface CommaFeedClient)
-	public static Object getInstance(Activity a) {
+	public static CommaFeedClient getInstance(Activity a) {
 		if (instance == null)
 			instance = Proxy.newProxyInstance(CommaFeedClient_.class.getClassLoader(), // Class loader
 											  new Class[] {CommaFeedClient.class},	 // Interfaces to implement
 											  new RestProxy(new CommaFeedClient_()));  // InvocationHandler, pass it a new class
 		activity = a;
 		toaster = (CanToast) a;
-		return instance;
+		return (CommaFeedClient) instance;
+	}
+	
+	// For when we only want to update metadata of the client, not use it
+	public static CommaFeedClient getInstance() {
+		return getInstance(activity);
 	}
 	
 	public RestProxy(CommaFeedClient_ c) {
@@ -51,7 +56,7 @@ public class RestProxy implements InvocationHandler {
 		}
 		Object ret = null;
 		Tools.info("Calling method "+method.getName());
-		Tools.info("client == "+client.getClass().toString());
+		//Tools.info("client == "+client.getClass().toString());
 		try {
 			// I am not a smart man
 			switch(args.length){

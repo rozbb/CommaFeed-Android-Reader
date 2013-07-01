@@ -7,9 +7,13 @@ import com.googlecode.androidannotations.annotations.rest.Get;
 import com.googlecode.androidannotations.annotations.rest.Post;
 import com.googlecode.androidannotations.annotations.rest.Rest;
 
-
-@Rest(converters = { MappingJacksonHttpMessageConverter.class }, rootUrl = "https://www.commafeed.com/rest")
+// DO NOT INSTANTIATE CLIENTS FROM HERE
+// Use RestProxy.getInstance() to get the single client object which
+// handles errors gracefully
+@Rest(converters = { MappingJacksonHttpMessageConverter.class })
 public interface CommaFeedClient {
+	
+	public void setRootUrl(String rootUrl);
 	
 	/*
 	 * Category API

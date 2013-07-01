@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.commafeed.commafeedreader"
-    android:versionCode="1"
-    android:versionName="0.1"
+    android:versionCode="2"
+    android:versionName="0.2"
     android:configChanges="keyboardHidden|orientation" >
     
     <uses-permission android:name="android.permission.INTERNET" />
@@ -27,6 +27,9 @@
         </activity>
         <activity
             android:name="com.commafeed.commafeedreader.LoginViewActivity_"
+            android:label="@string/app_name" />
+        <activity
+            android:name="com.commafeed.commafeedreader.PreferenceView"
             android:label="@string/app_name" />
     </application>
 </manifest>

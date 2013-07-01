@@ -17,6 +17,7 @@ Current Features
 * Browse folders and subscriptions
 * View entries in a basic web view
 * Get pretty HTTP exceptions
+* Use any server running CommaFeed
 
 Limitations
 -----------
@@ -33,6 +34,8 @@ TODO
 * Make web view much much prettier
 * Locally mark read entries as, well...read
 * Establish an API queue for updating things like read items with the server
+* Use back button to kill running AsyncTasks (once AndroidAnnotations 3.0 is released)
+* Have a "Log Out" option
 * Lots and lots more
 
 Dependencies

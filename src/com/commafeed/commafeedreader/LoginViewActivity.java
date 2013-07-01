@@ -23,7 +23,7 @@ import com.googlecode.androidannotations.annotations.ViewById;
 @EActivity(R.layout.login_view)
 public class LoginViewActivity extends Activity implements CanToast { // No Sherlock for this. Just log in
 	
-	CommaFeedClient client = (CommaFeedClient) RestProxy.getInstance(this);
+	CommaFeedClient client = RestProxy.getInstance(this);
 	
 	@ViewById
 	EditText usernameField;
@@ -40,8 +40,9 @@ public class LoginViewActivity extends Activity implements CanToast { // No Sher
 		AuthInterceptor ai = AuthInterceptor.getInstance();
 		interceptors.add(ai);
 		template.setInterceptors(interceptors);
-
+		
 		Tools.setContext(this);
+		client.setRootUrl(Tools.getApiUrl());
 	}
 	
 	@Click(R.id.loginButton)

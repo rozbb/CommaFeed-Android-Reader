@@ -36,7 +36,7 @@ class AuthInterceptor implements ClientHttpRequestInterceptor {
 		HttpHeaders headers = request.getHeaders();
 		HttpAuthentication auth = new HttpBasicAuthentication(username, password);
 		headers.setAuthorization(auth);
-		Tools.debug("Headers.auth == "+headers.getAuthorization());
+		//Tools.debug("Headers.auth == "+headers.getAuthorization());
 		return execution.execute(request, body);
 	}
 }

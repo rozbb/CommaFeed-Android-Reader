@@ -15,13 +15,15 @@ import android.util.Log;
 
 public class Tools {
 	
+	private static ExpectedException e = new ExpectedException();
+	private static Context context;
+	
 	public static String stackTraceString(Exception e) {
 		StringWriter sw = new StringWriter();
 		PrintWriter pw = new PrintWriter(sw);
 		e.printStackTrace(pw);
 		return sw.toString();
 	}
-	
 
 	public static boolean isOnline(Activity activity) {
 		ConnectivityManager cm =
@@ -53,15 +55,16 @@ public class Tools {
 	private static String password = null;
 	private static SharedPreferences preferences = null;
 	
-	// Need a context to make a SharedPreferences object
+	// Need this for access to preferences to load/save login
 	public static void setContext(Context c) {
-		if (c != null)
+		if (c != null) {
+			context = c;
 			preferences = PreferenceManager.getDefaultSharedPreferences(c);
+		}
 	}
 	
 	// Loads user/pass from sharedpreferences; throws an exception on failure
 	public static void loadLogin() {
-		ExpectedException e = new ExpectedException();
 		if (preferences == null)
 				throw e;
 		if (username != null && password != null) // User/pass was set during the lifetime of this program; don't bother loading
@@ -98,6 +101,10 @@ public class Tools {
 	
 	public static String getPassword() {
 		return password;
+	}
+	
+	public static String getApiUrl() { // Don't cache because it can change
+		return preferences.getString("apiUrl", context.getString(R.string.defaultApiUrl)); // if prefs aren't set, return default URL
 	}
 
 	public static <T> ArrayList<T> stackToArrayList(Stack<T> stack) {

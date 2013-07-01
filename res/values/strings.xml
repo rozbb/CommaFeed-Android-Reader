@@ -4,5 +4,6 @@
     <string name="app_name">Commafeed Reader</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="defaultApiUrl">https://www.commafeed.com/rest</string>
 
 </resources>

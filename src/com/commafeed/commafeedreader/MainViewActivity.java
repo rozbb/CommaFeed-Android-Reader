@@ -27,6 +27,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -37,7 +38,7 @@ import android.widget.Toast;
 // CanToast allows this to be compatible with the REST proxy that handles
 // all of the API errors
 @EActivity
-@OptionsMenu(R.menu.feed_view_menu)
+@OptionsMenu(R.menu.main_view_menu)
 public class MainViewActivity extends SherlockActivity implements CanToast {
 
 	private ActionBar actionBar;
@@ -50,7 +51,13 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 	private CatSubAdapter adapter;
 	private HashMap<String, Entries> entriesMap = new HashMap<String, Entries>(); // Maps subscription ids to entry groups
 	
-	CommaFeedClient client = (CommaFeedClient) RestProxy.getInstance(this);
+	CommaFeedClient client = RestProxy.getInstance(this);
+	
+	@OptionsItem
+	void settings() {
+		Intent i = new Intent(this, PreferenceView.class);
+		startActivity(i);
+	}
 	
 	@OptionsItem
 	void refresh() {
@@ -123,15 +130,11 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 			Tools.debug("Finished restoration");
 			return true;
 		}
-		catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		catch (StreamCorruptedException e) {
-			e.printStackTrace();
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+		// Slightly afraid to upgrade to JRE 1.7 so I'll leave it like this instead
+		// of having a single catch statement
+		catch (FileNotFoundException e) {}
+		catch (StreamCorruptedException e) {}
+		catch (IOException e) {}
 		return false;
 		
 	}
@@ -140,6 +143,7 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		Tools.setContext(this); // Allows me to load stuff from preferences
 		if (!assertLogin()) {
 			Intent i = new Intent(MainViewActivity.this, LoginViewActivity_.class); // Make the user log in before anything else
 			startActivity(i);
@@ -158,7 +162,6 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 	}
 	
 	boolean assertLogin() {
-		Tools.setContext(this);
 		try {
 			Tools.loadLogin();
 		} catch(ExpectedException e) {
@@ -175,6 +178,9 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 		ai.setPassword(Tools.getPassword());
 		interceptors.add(ai);
 		template.setInterceptors(interceptors);
+		client.setRootUrl(Tools.getApiUrl());
+		
+		Tools.debug("Set rootUrl to "+Tools.getApiUrl());
 
 		actionBar = getSupportActionBar();
 		listView = (ListView) getLayoutInflater().inflate(R.layout.feed_view, null);
@@ -199,8 +205,9 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 					}
 					else {
 						Tools.debug("holder.id == "+holder.id);
-						MainViewActivity.this.parentCategoryStack.push(currentCategory); // still wanna be able to go back
-						getAndShowEntries(holder.id); // this function deals with caching and what not
+						// this function deals with caching and pushes the current category
+						// to the parent category stack
+						getAndShowEntries(holder.id);
 					}
 				}
 				else { // it is an entry
@@ -267,7 +274,9 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 				return;
 			}
 		}
-		currentSubscriptionId = subId; // so we can pop back later
+		// We change the view state only after the network actions have succeeded
+		currentSubscriptionId = subId; // so we can pop back if we look at an entry
+		MainViewActivity.this.parentCategoryStack.push(currentCategory); // still wanna be able to go back to categories
 		entriesMap.put(subId, entries);
 		showEntries(entries);
 	}
@@ -275,7 +284,6 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 	@UiThread
 	void showEntries(Entries entries) {
 		EntryAdapter adapter = new EntryAdapter(MainViewActivity.this, entries);
-		Tools.debug("Pushed back "+currentCategory.name);
 		listView.setAdapter(adapter);
 		actionBar.setTitle(entries.name);
 		setContentView_(listView);
