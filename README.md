@@ -1,7 +1,7 @@
 CommaFeed Reader for Android
 ============================
 
-## Version 0.1
+## Version 0.2
 
 The official unofficial Android CommaFeed reader is here! It is currently in super-beta mode. It should appear on Google Play in a few hours, until then, feel free to download the APK in the main directory.
 
