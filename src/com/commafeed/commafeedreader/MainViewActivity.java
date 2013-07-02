@@ -64,6 +64,13 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 		populateAndShowCategory(); // clear the category cache then show
 	}
 	
+	// Clear login info and launch us into LoginView
+	@OptionsItem
+	void logout() {
+		Tools.clearLogin();
+		assertLogin();
+	}
+	
 	@UiThread
 	void progressStart(String s) {
 		progress = new ProgressDialog(MainViewActivity.this);

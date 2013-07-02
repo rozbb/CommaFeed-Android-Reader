@@ -8,5 +8,7 @@
             android:title="Settings" />
         <item android:id="@+id/refresh"
             android:title="Refresh" />
+        <item android:id="@+id/logout"
+            android:title="Log Out" />
 	</item>
 </menu>

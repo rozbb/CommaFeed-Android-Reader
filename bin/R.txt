@@ -330,6 +330,7 @@ int id homeAsUp 0x7f050006
 int id listMode 0x7f050002
 int id loginButton 0x7f05003a
 int id logoImage 0x7f050037
+int id logout 0x7f05003e
 int id normal 0x7f050001
 int id passwordField 0x7f050039
 int id refresh 0x7f05003d

@@ -1001,6 +1001,7 @@ containing a value of this type.
         public static final int listMode=0x7f050002;
         public static final int loginButton=0x7f05003a;
         public static final int logoImage=0x7f050037;
+        public static final int logout=0x7f05003e;
         public static final int normal=0x7f050001;
         public static final int passwordField=0x7f050039;
         public static final int refresh=0x7f05003d;
