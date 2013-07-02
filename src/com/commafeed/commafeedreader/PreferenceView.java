@@ -24,9 +24,14 @@ public class PreferenceView extends PreferenceActivity {
 		    			editor.commit(); // save
 		    			toast("Invalid API URL; falling back to default");
 		    		}
+		    		else  { // Valid URL, log out now
+		    			Tools.debug("Cleared login");
+			    		Tools.clearLogin(); // We need the user to log into the new site, so clear the current login
+		    		}
+		    		
 		    		// Now update the client's URL
 		    		CommaFeedClient client = RestProxy.getInstance();
-		    		client.setRootUrl(url); // Done!
+		    		client.setRootUrl(url);
 		        }
 		    }
 		};

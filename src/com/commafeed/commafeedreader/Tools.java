@@ -87,6 +87,17 @@ public class Tools {
 		editor.commit(); // Flush changes
 	}
 	
+	public static void clearLogin() {
+		// Clear caches
+		username = null;
+		password = null;
+		// Clear saved values, too
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.putString("username", null);
+		editor.putString("password", null);
+		editor.commit();
+	}
+	
 	public static void setUsername(String u) {
 		username = u;
 	}

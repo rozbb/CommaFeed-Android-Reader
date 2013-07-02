@@ -27,7 +27,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -144,15 +143,19 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 		super.onCreate(savedInstanceState);
 
 		Tools.setContext(this); // Allows me to load stuff from preferences
-		if (!assertLogin()) {
-			Intent i = new Intent(MainViewActivity.this, LoginViewActivity_.class); // Make the user log in before anything else
-			startActivity(i);
-			finish();
-			return;
-		}
+		if (!assertLogin()) // Make sure we're logged in; assertLogin switches to LoginView and finishes()
+			return;			// if we're not logged in
 		setup();
 		if (!restoreState())
 			populateAndShowCategory(); // if the state restoration didn't work, download
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (!assertLogin()) // Must check if we're still logged in onResume(); settings may have changed
+			return;
+		
 	}
 	
 	@Override
@@ -165,6 +168,9 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 		try {
 			Tools.loadLogin();
 		} catch(ExpectedException e) {
+			Intent i = new Intent(MainViewActivity.this, LoginViewActivity_.class); // Make the user log in before anything else
+			startActivity(i);
+			finish();
 			return false;
 		}
 		return true;

@@ -16,10 +16,13 @@ import com.googlecode.androidannotations.annotations.AfterViews;
 import com.googlecode.androidannotations.annotations.Background;
 import com.googlecode.androidannotations.annotations.Click;
 import com.googlecode.androidannotations.annotations.EActivity;
+import com.googlecode.androidannotations.annotations.OptionsItem;
+import com.googlecode.androidannotations.annotations.OptionsMenu;
 import com.googlecode.androidannotations.annotations.UiThread;
 import com.googlecode.androidannotations.annotations.ViewById;
 
 
+@OptionsMenu(R.menu.login_view_menu)
 @EActivity(R.layout.login_view)
 public class LoginViewActivity extends Activity implements CanToast { // No Sherlock for this. Just log in
 	
@@ -43,6 +46,12 @@ public class LoginViewActivity extends Activity implements CanToast { // No Sher
 		
 		Tools.setContext(this);
 		client.setRootUrl(Tools.getApiUrl());
+	}
+
+	@OptionsItem
+	void settings() {
+		Intent i = new Intent(this, PreferenceView.class);
+		startActivity(i);
 	}
 	
 	@Click(R.id.loginButton)
