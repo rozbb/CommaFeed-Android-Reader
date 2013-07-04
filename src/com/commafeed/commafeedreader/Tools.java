@@ -24,6 +24,14 @@ public class Tools {
 		e.printStackTrace(pw);
 		return sw.toString();
 	}
+	
+	public static String stackToString(Stack<Category> stack) {
+		String str = new String();
+		for (Category e : stack) {
+			str += e.name + "\n";
+		}
+		return str;
+	}
 
 	public static boolean isOnline(Activity activity) {
 		ConnectivityManager cm =

@@ -1,8 +1,12 @@
 package com.commafeed.commafeedreader;
 
+import java.util.HashMap;
+import java.util.Stack;
+
 public class ViewState {
-	public String type; // can be "category", "subscription", or "entry"
+	public Stack<Category> parents;
 	public Category category;
 	public String subId;
-	public String entryId;
+	public HashMap<String, Entries> entriesMap;
+	public EntryMetadata entry;
 }

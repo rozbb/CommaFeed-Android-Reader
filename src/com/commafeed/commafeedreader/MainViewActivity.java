@@ -4,14 +4,12 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
 import org.codehaus.jackson.map.ObjectMapper;
-import org.codehaus.jackson.type.TypeReference;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
 
@@ -45,6 +43,7 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 	private ProgressDialog progress;
 	private Category currentCategory = null;
 	private String currentSubscriptionId = null;
+	private EntryMetadata currentEntryMetadata = null;
 	private boolean viewingEntry = false;
 	private Stack<Category> parentCategoryStack = new Stack<Category>(); // no parents at root view
 	private CatSubAdapter adapter;
@@ -93,19 +92,18 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 	// Must figure out what do do when one of the exceptions below is thrown
 	public void saveState() {
 		Tools.debug("Saving state...");
+		ViewState state = new ViewState();
+		state.parents = parentCategoryStack;
+		state.category = currentCategory;
+		state.subId = currentSubscriptionId;
+		state.entriesMap = entriesMap;
+		state.entry = currentEntryMetadata;
 		try {
-			FileOutputStream categoryFile = openFileOutput("category", Context.MODE_PRIVATE);
-			FileOutputStream parentsFile = openFileOutput("parents", Context.MODE_PRIVATE);
-			FileOutputStream entriesFile = openFileOutput("entries", Context.MODE_PRIVATE);
+			FileOutputStream viewStateFile = openFileOutput("viewState", Context.MODE_PRIVATE);
 			// Map everything back to JSON
 			ObjectMapper jsonMapper = new ObjectMapper();
-			jsonMapper.writeValue(categoryFile, currentCategory);
-			jsonMapper.writeValue(parentsFile, Tools.stackToArrayList(parentCategoryStack));
-			jsonMapper.writeValue(entriesFile, entriesMap);
-
-			categoryFile.close();
-			parentsFile.close();
-			entriesFile.close();
+			jsonMapper.writeValue(viewStateFile, state);			
+			viewStateFile.close();
 		}
 		// Not sure how this would be thrown; MODE_PRIVATE creates
 		// the file if it doesn't already exist
@@ -122,25 +120,46 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 	public boolean restoreState() {
 		Tools.debug("Restoring state...");
 		try {
-			FileInputStream categoryFile = openFileInput("category");
-			FileInputStream parentsFile = openFileInput("parents");
-			FileInputStream entriesFile = openFileInput("entries");
+			FileInputStream viewStateFile = openFileInput("viewState");
 			ObjectMapper jsonMapper = new ObjectMapper();
-			currentCategory = (Category) jsonMapper.readValue(categoryFile, Category.class);
-			// When saving the parent stack is converted to a list; we must convert it back
-			ArrayList<Category> parentList = (ArrayList<Category>) jsonMapper.readValue(parentsFile,
-											  new TypeReference<ArrayList<Category>>(){});
-			parentCategoryStack = Tools.arrayListToStack(parentList);
-			entriesMap = (HashMap<String, Entries>) jsonMapper.readValue(entriesFile, new TypeReference<HashMap<String, Entries>>(){});
-			showCurrentCategory();
+			ViewState viewState = jsonMapper.readValue(viewStateFile, ViewState.class);
+			boolean showCategory=false, showEntries=false, showEntry=false; // We'll see what to do once we parse the state
+			
+			// Drill down view in order of specificity
+			if (viewState.entry != null)
+				showEntry = true;
+			else if (viewState.subId != null)
+				showEntries = true;
+			else if (viewState.category != null)
+				showCategory = true;
+			else
+				throw (new RuntimeException("State was not category, entries, or entry!")); // Very very weird if it happened
+			
+			parentCategoryStack = viewState.parents;
+			currentCategory = viewState.category;
+			currentSubscriptionId = viewState.subId;
+			entriesMap = viewState.entriesMap;
+			currentEntryMetadata = viewState.entry;
+			// Go in order just like before
+			if (showEntry) {
+				// Must set title for entry view; assume entries are in entriesMap (fair assumption...I think)
+				showEntry(currentEntryMetadata);
+				actionBar.setTitle(entriesMap.get(currentSubscriptionId).name);
+			}
+			else if (showEntries)
+				getAndShowEntries(currentSubscriptionId);
+			else if (showCategory)
+				showCurrentCategory();
 			Tools.debug("Finished restoration");
 			return true;
 		}
-		// Slightly afraid to upgrade to JRE 1.7 so I'll leave it like this instead
-		// of having a single catch statement
-		catch (FileNotFoundException e) {}
-		catch (StreamCorruptedException e) {}
-		catch (IOException e) {}
+		
+		catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
 		return false;
 		
 	}
@@ -218,23 +237,18 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 					}
 					else {
 						Tools.debug("holder.id == "+holder.id);
-						// this function deals with caching and pushes the current category
-						// to the parent category stack
-						getAndShowEntries(holder.id);
+						// this function deals with caching
+						try {
+							getAndShowEntries(holder.id);
+							// still wanna be able to go back to categories
+							MainViewActivity.this.parentCategoryStack.push(currentCategory);
+						}
+						catch (ExpectedException e) {} // Do not push if getAndShowEntries() fails
 					}
 				}
 				else { // it is an entry
 					EntryMetadata holder = (EntryMetadata) view.getTag();
-					WebView webView = new WebView(MainViewActivity.this);
-					webView.loadData(holder.html, "text/html", null);
-					WebSettings settings = webView.getSettings();
-					settings.setBuiltInZoomControls(true); // allow for pinch-zoom
-					settings.setSupportZoom(true);
-					settings.setUseWideViewPort(true); // scale (poorly) to screen
-					settings.setLightTouchEnabled(true);
-					settings.setLoadWithOverviewMode(true);
-					viewingEntry = true;
-					setContentView_(webView);
+					showEntry(holder);
 				}
 			}
 		});
@@ -284,12 +298,11 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 			}
 			catch (ExpectedException e) {
 				progressStop();
-				return;
+				throw e; // Propagate the error down
 			}
 		}
 		// We change the view state only after the network actions have succeeded
 		currentSubscriptionId = subId; // so we can pop back if we look at an entry
-		MainViewActivity.this.parentCategoryStack.push(currentCategory); // still wanna be able to go back to categories
 		entriesMap.put(subId, entries);
 		showEntries(entries);
 	}
@@ -301,9 +314,28 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 		actionBar.setTitle(entries.name);
 		setContentView_(listView);
 	}
+	
+	@UiThread
+	void showEntry(EntryMetadata holder) {
+		WebView webView = new WebView(MainViewActivity.this);
+		webView.loadData(holder.html, "text/html", null);
+		WebSettings settings = webView.getSettings();
+		settings.setBuiltInZoomControls(true); // allow for pinch-zoom
+		settings.setSupportZoom(true);
+		settings.setUseWideViewPort(true); // scale (poorly) to screen
+		settings.setLightTouchEnabled(true);
+		settings.setLoadWithOverviewMode(true);
+		
+		// Very important variables for maintaining state
+		currentEntryMetadata = holder;
+		viewingEntry = true;
+		
+		setContentView_(webView);
+	}
 
 	@Override
 	public void onBackPressed() {
+		Tools.debug("Parent Stack:\n" + Tools.stackToString(parentCategoryStack)+"\n");
 		// If we're at the topmost and back is pressed, die
 		if (parentCategoryStack.empty()) {
 			finish();
@@ -312,11 +344,13 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 		else if (viewingEntry) { // if we're looking at an entry, go back to the entry list
 			Tools.debug("Back pressed, going back to subscription");
 			getAndShowEntries(currentSubscriptionId);
+			currentEntryMetadata = null; // Pop state back
 			viewingEntry = false;
 		}
 		else { // Otherwise pop out to last category
 			Tools.debug("Back pressed, going back to parent");
 			currentCategory = parentCategoryStack.pop();
+			currentSubscriptionId = null;
 			showCurrentCategory();
 		}
 	}

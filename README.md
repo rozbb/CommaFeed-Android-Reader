@@ -1,7 +1,7 @@
 CommaFeed Reader for Android
 ============================
 
-## Version 0.2
+## Version 0.2.1
 
 The official unofficial Android CommaFeed reader is here! It is currently in super-beta mode. Download it from [Google Play](https://play.google.com/store/apps/details?id=com.commafeed.commafeedreader).
 
@@ -29,8 +29,8 @@ Limitations
 TODO
 ----
 
+* Faster screen rotation (don't save to file on rotation)
 * Load respective icons from iconURL
-* Use ViewState to retain view over onStop() and the like without breaking
 * Make web view much much prettier
 * Locally mark read entries as, well...read
 * Establish an API queue for updating things like read items with the server

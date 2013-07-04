@@ -6,6 +6,7 @@ public class Entries {
 	public String name;
 	public String message;
 	public int errorCount;
+	public String feedLink;
 	public long timestamp;
 	public boolean hasMore;
 	public ArrayList<Entry> entries = new ArrayList<Entry>();

@@ -1,11 +1,15 @@
 package com.commafeed.commafeedreader;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.springframework.http.converter.json.MappingJacksonHttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import com.googlecode.androidannotations.annotations.rest.Get;
 import com.googlecode.androidannotations.annotations.rest.Post;
 import com.googlecode.androidannotations.annotations.rest.Rest;
+
+// Ensure that my ignorance of API changes doesn't break the client
+@JsonIgnoreProperties(ignoreUnknown = true)
 
 // DO NOT INSTANTIATE CLIENTS FROM HERE
 // Use RestProxy.getInstance() to get the single client object which
