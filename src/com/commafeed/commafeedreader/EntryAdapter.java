@@ -41,6 +41,7 @@ public class EntryAdapter extends ArrayAdapter<Entry> {
 
 			holder.name = (TextView)  rowView.findViewById(R.id.feedName);
 			holder.html = entry.content;
+			holder.id 	= entry.id;
 			
 			holder.name.setText(entry.title);
 			

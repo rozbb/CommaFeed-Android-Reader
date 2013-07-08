@@ -10,5 +10,6 @@ public class EntryMetadata {
 	public TextView name;
 	
 	public boolean unread;
+	public String id;
 	public String html;
 }

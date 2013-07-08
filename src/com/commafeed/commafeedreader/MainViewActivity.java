@@ -44,6 +44,7 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 	private Category currentCategory = null;
 	private String currentSubscriptionId = null;
 	private EntryMetadata currentEntryMetadata = null;
+	private String currentEntryId = null;
 	private boolean viewingEntry = false;
 	private Stack<Category> parentCategoryStack = new Stack<Category>(); // no parents at root view
 	private CatSubAdapter adapter;
@@ -236,7 +237,7 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 						MainViewActivity.this.showCurrentCategory();
 					}
 					else {
-						Tools.debug("holder.id == "+holder.id);
+						Tools.debug("Subscription holder.id == "+holder.id);
 						// this function deals with caching
 						try {
 							getAndShowEntries(holder.id);
@@ -307,6 +308,7 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 		showEntries(entries);
 	}
 	
+	// The CommaFeed API returns an Entries object when given a subscription ID to fetch
 	@UiThread
 	void showEntries(Entries entries) {
 		EntryAdapter adapter = new EntryAdapter(MainViewActivity.this, entries);
@@ -330,12 +332,41 @@ public class MainViewActivity extends SherlockActivity implements CanToast {
 		currentEntryMetadata = holder;
 		viewingEntry = true;
 		
+		currentEntryId = holder.id;
+		if (holder.unread = true) {
+			getCurrentEntry().read = true; // Mark this particular Entry as read
+			getCurrentSubscription().unread--; // Decrease the unread count
+		}
+
 		setContentView_(webView);
+	}
+	
+	Subscription getCurrentSubscription() {
+		for (Subscription s : currentCategory.feeds) {
+			if (String.valueOf(s.id).equals(currentSubscriptionId))
+				return s;
+		}
+		return null;
+	}
+	
+	// Note that this doesn't mean a list of Entry, rather an actual Entries class
+	Entries getCurrentEntries() {
+		return entriesMap.get(currentSubscriptionId); // returns null if it's not there
+	}
+
+	Entry getCurrentEntry() {
+		Entries entries = getCurrentEntries();
+		Tools.debug("Current Entry ID == "+currentEntryId);
+		for (Entry e : entries.entries) {
+			if (e.id.equals(currentEntryId))
+				return e;
+		}
+		return null;
 	}
 
 	@Override
 	public void onBackPressed() {
-		Tools.debug("Parent Stack:\n" + Tools.stackToString(parentCategoryStack)+"\n");
+		//Tools.debug("Parent Stack:\n" + Tools.stackToString(parentCategoryStack)+"\n");
 		// If we're at the topmost and back is pressed, die
 		if (parentCategoryStack.empty()) {
 			finish();
