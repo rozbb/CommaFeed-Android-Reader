@@ -1,6 +1,9 @@
 CommaFeed Reader for Android
 ============================
 
+# NOTICE
+This project has been discontinued. The current method of using Commafeed on Android is to download News+ with the Commafeed plugin written by Athou.
+
 ## Version 0.2.2
 
 The official unofficial Android CommaFeed reader is here! It is currently in super-beta mode. Download it from [Google Play](https://play.google.com/store/apps/details?id=com.commafeed.commafeedreader).
